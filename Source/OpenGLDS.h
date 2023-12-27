@@ -254,6 +254,8 @@ struct TextureFromAsset final : public DemoTexture
     }
 };
 
+// Presets from JUCE OpenGLDemo example
+
 static juce::Array<ShaderPreset> getPresets()
 {
 #define SHADER_DEMO_HEADER                                \
