@@ -222,7 +222,7 @@ Matrix3D<float> MainComponent::getProjectionMatrix() const
     auto w = 1.0f / (scale + 0.1f);
     auto h = w * bounds.toFloat().getAspectRatio(false);
 
-    return Matrix3D<float>::fromFrustum(-w, w, -h, h, 4.0f, 30.0f);
+    return Matrix3D<float>::fromFrustum(-w, w, -h, h, 1.0f, 30.0f);
 }
 
 Matrix3D<float> MainComponent::getViewMatrix() const
@@ -231,7 +231,7 @@ Matrix3D<float> MainComponent::getViewMatrix() const
 
     // if we had controls
     // auto viewMatrix = Matrix3D<float>::fromTranslation({0.0f, 1.0f, -10.0f}) * draggableOrientation.getRotationMatrix();
-    auto viewMatrix = Matrix3D<float>::fromTranslation({0.0f, 1.0f, -10.0f});
+    auto viewMatrix = Matrix3D<float>::fromTranslation({0.0f, 0.0f, -1.5f});
     auto rotationMatrix = Matrix3D<float>::rotation({rotation, rotation, -0.3f});
 
     return viewMatrix * rotationMatrix;
