@@ -1,9 +1,4 @@
 // OpenGL Data Structures
-
-/**
- * TODO: remove the :: in ::juce::gl, doesn't make sense
- */
-
 // Code from JUCE OpenGLUtils.h
 
 #include <JuceHeader.h>
@@ -146,7 +141,7 @@ private:
             numIndices = shape.mesh.indices.size();
 
             glGenBuffers(1, &vertexBuffer);
-            glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+            juce::gl::glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
             Array<Vertex> vertices;
             createVertexListFromMesh(shape.mesh, vertices, Colours::green);
@@ -224,7 +219,59 @@ struct ShaderPreset
     const char *fragmentShader;
 };
 
-static Array<ShaderPreset> getPresets()
+struct DemoTexture
+{
+    virtual ~DemoTexture() {}
+    virtual bool applyTo(OpenGLTexture &) = 0;
+
+    String name;
+};
+
+static Image resizeImageToPowerOfTwo(Image image)
+{
+    if (!(isPowerOfTwo(image.getWidth()) && isPowerOfTwo(image.getHeight())))
+        return image.rescaled(jmin(1024, nextPowerOfTwo(image.getWidth())),
+                              jmin(1024, nextPowerOfTwo(image.getHeight())));
+
+    return image;
+}
+
+struct TextureFromFile final : public DemoTexture
+{
+    TextureFromFile(const File &file)
+    {
+        name = file.getFileName();
+        image = resizeImageToPowerOfTwo(ImageFileFormat::loadFrom(file));
+    }
+
+    Image image;
+
+    bool applyTo(OpenGLTexture &texture) override
+    {
+        texture.loadImage(image);
+        return false;
+    }
+};
+
+struct TextureFromAsset final : public DemoTexture
+{
+    // uh? ambigious error using GLBIND... if we remove juce:: prefixes?
+    TextureFromAsset(juce::String assetName)
+    {
+        name = assetName;
+        image = resizeImageToPowerOfTwo(getImage(assetName.toRawUTF8()));
+    }
+
+    juce::Image image;
+
+    bool applyTo(OpenGLTexture &texture) override
+    {
+        texture.loadImage(image);
+        return false;
+    }
+};
+
+static juce::Array<ShaderPreset> getPresets()
 {
 #define SHADER_DEMO_HEADER                                \
     "/*  This is a live OpenGL Shader demo.\n"            \
@@ -481,41 +528,97 @@ static Array<ShaderPreset> getPresets()
              "    gl_FragColor = colour;\n"
              "}\n"},
 
-        };
+            {"Flattened",
+
+             SHADER_DEMO_HEADER
+             "attribute vec4 position;\n"
+             "attribute vec4 normal;\n"
+             "\n"
+             "uniform mat4 projectionMatrix;\n"
+             "uniform mat4 viewMatrix;\n"
+             "uniform vec4 lightPosition;\n"
+             "\n"
+             "varying float lightIntensity;\n"
+             "\n"
+             "void main()\n"
+             "{\n"
+             "    vec4 light = viewMatrix * lightPosition;\n"
+             "    lightIntensity = dot (light, normal);\n"
+             "\n"
+             "    vec4 v = vec4 (position);\n"
+             "    v.z = v.z * 0.1;\n"
+             "\n"
+             "    gl_Position = projectionMatrix * viewMatrix * v;\n"
+             "}\n",
+
+             SHADER_DEMO_HEADER
+#if JUCE_OPENGL_ES
+             "varying highp float lightIntensity;\n"
+#else
+             "varying float lightIntensity;\n"
+#endif
+             "\n"
+             "void main()\n"
+             "{\n"
+#if JUCE_OPENGL_ES
+             "   highp float l = lightIntensity * 0.25;\n"
+             "   highp vec4 colour = vec4 (l, l, l, 1.0);\n"
+#else
+             "   float l = lightIntensity * 0.25;\n"
+             "   vec4 colour = vec4 (l, l, l, 1.0);\n"
+#endif
+             "\n"
+             "    gl_FragColor = colour;\n"
+             "}\n"},
+
+            {"Toon Shader",
+
+             SHADER_DEMO_HEADER
+             "attribute vec4 position;\n"
+             "attribute vec4 normal;\n"
+             "\n"
+             "uniform mat4 projectionMatrix;\n"
+             "uniform mat4 viewMatrix;\n"
+             "uniform vec4 lightPosition;\n"
+             "\n"
+             "varying float lightIntensity;\n"
+             "\n"
+             "void main()\n"
+             "{\n"
+             "    vec4 light = viewMatrix * lightPosition;\n"
+             "    lightIntensity = dot (light, normal);\n"
+             "\n"
+             "    gl_Position = projectionMatrix * viewMatrix * position;\n"
+             "}\n",
+
+             SHADER_DEMO_HEADER
+#if JUCE_OPENGL_ES
+             "varying highp float lightIntensity;\n"
+#else
+             "varying float lightIntensity;\n"
+#endif
+             "\n"
+             "void main()\n"
+             "{\n"
+#if JUCE_OPENGL_ES
+             "    highp float intensity = lightIntensity * 0.5;\n"
+             "    highp vec4 colour;\n"
+#else
+             "    float intensity = lightIntensity * 0.5;\n"
+             "    vec4 colour;\n"
+#endif
+             "\n"
+             "    if (intensity > 0.95)\n"
+             "        colour = vec4 (1.0, 0.5, 0.5, 1.0);\n"
+             "    else if (intensity > 0.5)\n"
+             "        colour  = vec4 (0.6, 0.3, 0.3, 1.0);\n"
+             "    else if (intensity > 0.25)\n"
+             "        colour  = vec4 (0.4, 0.2, 0.2, 1.0);\n"
+             "    else\n"
+             "        colour  = vec4 (0.2, 0.1, 0.1, 1.0);\n"
+             "\n"
+             "    gl_FragColor = colour;\n"
+             "}\n"}};
 
     return Array<ShaderPreset>(presets, numElementsInArray(presets));
-}
-
-struct DemoTexture
-{
-    virtual ~DemoTexture() {}
-    virtual bool applyTo(OpenGLTexture &) = 0;
-
-    String name;
-};
-
-static Image resizeImageToPowerOfTwo(Image image)
-{
-    if (!(isPowerOfTwo(image.getWidth()) && isPowerOfTwo(image.getHeight())))
-        return image.rescaled(jmin(1024, nextPowerOfTwo(image.getWidth())),
-                              jmin(1024, nextPowerOfTwo(image.getHeight())));
-
-    return image;
-}
-
-struct TextureFromFile final : public DemoTexture
-{
-    TextureFromFile(const File &file)
-    {
-        name = file.getFileName();
-        image = resizeImageToPowerOfTwo(ImageFileFormat::loadFrom(file));
-    }
-
-    Image image;
-
-    bool applyTo(OpenGLTexture &texture) override
-    {
-        texture.loadImage(image);
-        return false;
-    }
 };

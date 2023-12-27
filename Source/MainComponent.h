@@ -2,8 +2,9 @@
 
 #include <JuceHeader.h>
 #include "AudioSettingsComponent.h"
+#include "OpenGLDS.h"
 
-class MainComponent  :  public juce::Component, public juce::AudioSource, private juce::Timer
+class MainComponent  :  public juce::Component, public juce::AudioSource, private juce::Timer, private juce::OpenGLRenderer, private juce::AsyncUpdater
 {
 public:
     MainComponent();
@@ -24,6 +25,22 @@ public:
     void prepareToPlay (int, double) override;
     void releaseResources() override;
 
+    // Graphics
+    void newOpenGLContextCreated() override;
+    void openGLContextClosing() override;
+    void renderOpenGL() override;
+    juce::Matrix3D<float> getProjectionMatrix() const;
+    juce::Matrix3D<float> getViewMatrix() const;
+    void setShaderProgram(const juce::String&, const juce::String&);
+    void setTexture (DemoTexture*);
+    void freeAllContextObjects();
+
+    float scale = 1.0f, rotationSpeed = 0.0f;
+    juce::CriticalSection mutex;
+    juce::Rectangle<int> bounds;
+    BouncingNumber bouncingNumber;
+
+    // DSP
     enum {
         fftOrder = 10,
         fftSize = 1 << fftOrder,
@@ -38,6 +55,25 @@ private:
     
     void setAudioChannels(int, int);
     void shutDownAudio();
+
+    // Graphics
+    float rotation = 0.0f;
+    juce::OpenGLContext openGLContext;
+
+    std::unique_ptr<juce::OpenGLShaderProgram> shader;
+    std::unique_ptr<Shape> shape;
+    std::unique_ptr<Attributes> attributes;
+    std::unique_ptr<Uniforms> uniforms;
+
+    juce::OpenGLTexture texture;
+    DemoTexture* textureToUse = nullptr;
+    DemoTexture* lastTexture  = nullptr;
+
+    juce::CriticalSection shaderMutex;
+    juce::String newVertexShader, newFragmentShader, statusText;
+
+    void updateShader();
+    void handleAsyncUpdate() override;
 
     // DSP Stuff
     juce::dsp::FFT forwardFFT;

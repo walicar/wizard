@@ -4,6 +4,10 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="nAWEwZ" name="wizard">
     <GROUP id="{0F346638-3CFC-F695-EBCF-9609A1893F6E}" name="Source">
+      <FILE id="LEju40" name="OpenGLDS.h" compile="0" resource="0" file="Source/OpenGLDS.h"/>
+      <FILE id="M2Uvhf" name="WavefrontObjParser.h" compile="0" resource="0"
+            file="Source/WavefrontObjParser.h"/>
+      <FILE id="dZidsV" name="Utilities.h" compile="0" resource="0" file="Source/Utilities.h"/>
       <FILE id="LF8lGx" name="AudioSettingsComponent.h" compile="0" resource="0"
             file="Source/AudioSettingsComponent.h"/>
       <FILE id="nHSce6" name="AudioSettingsComponent.cpp" compile="1" resource="0"
