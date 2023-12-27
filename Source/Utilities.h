@@ -1,6 +1,5 @@
 #include <JuceHeader.h>
 
-
 inline juce::String getAsset(const char *assetName)
 {
     // actually returning the data within the .obj file

@@ -4,25 +4,25 @@
 #include "AudioSettingsComponent.h"
 #include "OpenGLDS.h"
 
-class MainComponent  :  public juce::Component, public juce::AudioSource, private juce::Timer, private juce::OpenGLRenderer, private juce::AsyncUpdater
+class MainComponent : public juce::Component, public juce::AudioSource, private juce::Timer, private juce::OpenGLRenderer, private juce::AsyncUpdater
 {
 public:
     MainComponent();
     ~MainComponent() override;
 
-    void paint (juce::Graphics&) override;
+    void paint(juce::Graphics &) override;
     void resized() override;
 
-    void getNextAudioBlock(const juce::AudioSourceChannelInfo&) override;
+    void getNextAudioBlock(const juce::AudioSourceChannelInfo &) override;
 
     void timerCallback() override;
 
-    void pushNextSampleIntoFifo (float);
+    void pushNextSampleIntoFifo(float);
 
     void processFFT();
 
     // Need to be implemented
-    void prepareToPlay (int, double) override;
+    void prepareToPlay(int, double) override;
     void releaseResources() override;
 
     // Graphics
@@ -31,8 +31,8 @@ public:
     void renderOpenGL() override;
     juce::Matrix3D<float> getProjectionMatrix() const;
     juce::Matrix3D<float> getViewMatrix() const;
-    void setShaderProgram(const juce::String&, const juce::String&);
-    void setTexture (DemoTexture*);
+    void setShaderProgram(const juce::String &, const juce::String &);
+    void setTexture(DemoTexture *);
     void freeAllContextObjects();
 
     float scale = 1.0f, rotationSpeed = 0.01f;
@@ -41,18 +41,18 @@ public:
     BouncingNumber bouncingNumber;
 
     // DSP
-    enum {
+    enum
+    {
         fftOrder = 10,
         fftSize = 1 << fftOrder,
     };
-
 
 private:
     // Audio
     juce::AudioDeviceManager audioDeviceManager;
     juce::AudioSourcePlayer audioSourcePlayer;
     AudioSettingsComponent audioSettingsComponent;
-    
+
     void setAudioChannels(int, int);
     void shutDownAudio();
 
@@ -66,8 +66,8 @@ private:
     std::unique_ptr<Uniforms> uniforms;
 
     juce::OpenGLTexture texture;
-    DemoTexture* textureToUse = nullptr;
-    DemoTexture* lastTexture  = nullptr;
+    DemoTexture *textureToUse = nullptr;
+    DemoTexture *lastTexture = nullptr;
 
     juce::CriticalSection shaderMutex;
     juce::String newVertexShader, newFragmentShader, statusText;
@@ -82,5 +82,5 @@ private:
     int fifoIndex = 0;
     bool nextFFTBlockReady = false;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

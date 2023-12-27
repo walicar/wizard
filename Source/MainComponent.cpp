@@ -136,7 +136,7 @@ void MainComponent::newOpenGLContextCreated()
 }
 
 void MainComponent::renderOpenGL()
-{ 
+{
     using namespace ::juce::gl;
 
     const ScopedLock lock(mutex);
@@ -304,7 +304,6 @@ void MainComponent::updateShader()
         }
 
         triggerAsyncUpdate();
-
     }
 }
 
