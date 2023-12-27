@@ -236,23 +236,6 @@ static Image resizeImageToPowerOfTwo(Image image)
     return image;
 }
 
-struct TextureFromFile final : public DemoTexture
-{
-    TextureFromFile(const File &file)
-    {
-        name = file.getFileName();
-        image = resizeImageToPowerOfTwo(ImageFileFormat::loadFrom(file));
-    }
-
-    Image image;
-
-    bool applyTo(OpenGLTexture &texture) override
-    {
-        texture.loadImage(image);
-        return false;
-    }
-};
-
 struct TextureFromAsset final : public DemoTexture
 {
     // uh? ambigious error using GLBIND... if we remove juce:: prefixes?
