@@ -10,7 +10,7 @@ struct Vertex
     float position[3];
     float normal[3];
     float colour[4];
-    float texture[2];
+    float texCoord[2];
 };
 
 // Link vertex Attributes 5.2
@@ -21,7 +21,7 @@ struct Attributes
         position.reset(createAttribute(shader, "position"));
         normal.reset(createAttribute(shader, "normal"));
         sourceColour.reset(createAttribute(shader, "sourceColour"));
-        sourceTexture.reset(createAttribute(shader, "sourceTexture"));
+        textureCoordIn.reset(createAttribute(shader, "textureCoordIn"));
     }
 
     void enable()
@@ -46,10 +46,10 @@ struct Attributes
             glEnableVertexAttribArray(sourceColour->attributeID);
         }
 
-        if (sourceTexture.get() != nullptr)
+        if (textureCoordIn.get() != nullptr)
         {
-            glVertexAttribPointer(sourceTexture->attributeID, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)(sizeof(float) * 10));
-            glEnableVertexAttribArray(sourceTexture->attributeID);
+            glVertexAttribPointer(textureCoordIn->attributeID, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)(sizeof(float) * 10));
+            glEnableVertexAttribArray(textureCoordIn->attributeID);
         }
     }
 
@@ -63,11 +63,11 @@ struct Attributes
             glDisableVertexAttribArray(normal->attributeID);
         if (sourceColour != nullptr)
             glDisableVertexAttribArray(sourceColour->attributeID);
-        if (sourceTexture != nullptr)
-            glDisableVertexAttribArray(sourceTexture->attributeID);
+        if (textureCoordIn != nullptr)
+            glDisableVertexAttribArray(textureCoordIn->attributeID);
     }
 
-    std::unique_ptr<juce::OpenGLShaderProgram::Attribute> position, normal, sourceColour, sourceTexture;
+    std::unique_ptr<juce::OpenGLShaderProgram::Attribute> position, normal, sourceColour, textureCoordIn;
 
 private:
     static juce::OpenGLShaderProgram::Attribute *createAttribute(juce::OpenGLShaderProgram &shader,
@@ -140,7 +140,7 @@ private:
 
             numIndices = shape.mesh.indices.size();
 
-            glGenBuffers(1, &vertexBuffer);
+            juce::gl::glGenBuffers(1, &vertexBuffer);
             juce::gl::glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
             Array<Vertex> vertices;
@@ -273,6 +273,7 @@ struct TextureFromAsset final : public DemoTexture
 
 static juce::Array<ShaderPreset> getPresets()
 {
+    printf("getPreset called");
 #define SHADER_DEMO_HEADER                                \
     "/*  This is a live OpenGL Shader demo.\n"            \
     "    Edit the shader program below and it will be \n" \

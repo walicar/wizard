@@ -1,5 +1,9 @@
 #include "MainComponent.h"
 
+/**
+ * TODO: Box is not spinning
+ */
+
 MainComponent::MainComponent() : audioSettingsComponent(audioDeviceManager), forwardFFT(fftOrder)
 {
     if (auto *peer = getPeer())
@@ -10,12 +14,11 @@ MainComponent::MainComponent() : audioSettingsComponent(audioDeviceManager), for
 
     ShaderPreset shaderPreset = getPresets()[0];
     setShaderProgram(shaderPreset.vertexShader, shaderPreset.fragmentShader);
-    setTexture(new TextureFromAsset("portmeirion.jpg"));
+    setTexture(new TextureFromAsset("port.jpg"));
 
     openGLContext.setRenderer(this);
     openGLContext.attachTo(*this);
     openGLContext.setContinuousRepainting(true);
-    
 
     // setup audio
     juce::RuntimePermissions::request(juce::RuntimePermissions::recordAudio,
@@ -58,7 +61,7 @@ void MainComponent::resized()
     // This is called when the MainComponent is resized.
     // If you add any child components, this is where you should
     // update their positions.
-    const ScopedLock lock (mutex);
+    const ScopedLock lock(mutex);
     bounds = getLocalBounds();
 }
 
@@ -117,10 +120,10 @@ void MainComponent::processFFT()
         auto fftDataIndex = (size_t)juce::jlimit(0, fftSize / 2, (int)(skewedProportionY * fftSize / 2));
         auto level = juce::jmap(fftData[fftDataIndex], 0.0f, juce::jmax(maxLevel.getEnd(), 1e-5f), 0.0f, 1.0f);
 
-        if (y >= 100 and y <= 125)
-        {
-            printf("level[%d]> %f\n", y, level);
-        }
+        // if (y >= 100 and y <= 110)
+        // {
+        //     printf("level[%d]> %f\n", y, level);
+        // }
     }
 }
 
@@ -189,7 +192,10 @@ void MainComponent::renderOpenGL()
     shader->use();
 
     if (uniforms->projectionMatrix != nullptr)
+    {
         uniforms->projectionMatrix->setMatrix4(getProjectionMatrix().mat, 1, false);
+        printf("erm?");
+    }
 
     if (uniforms->viewMatrix != nullptr)
         uniforms->viewMatrix->setMatrix4(getViewMatrix().mat, 1, false);
@@ -209,8 +215,7 @@ void MainComponent::renderOpenGL()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    // if (!controlsOverlay->isMouseButtonDownThreadsafe())
-    //     rotation += (float)rotationSpeed;
+    rotation += (float)rotationSpeed;
 }
 
 void MainComponent::openGLContextClosing()
@@ -315,8 +320,8 @@ void MainComponent::updateShader()
 
         // in the example we use CodeDocument vertexShader to make sure we have a single truth
 
-        // newVertexShader = {};
-        // newFragmentShader = {};
+        newVertexShader = {};
+        newFragmentShader = {};
 
         // I don't think we have to update this if the program doesn't use a code document?
     }
