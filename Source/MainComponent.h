@@ -35,7 +35,7 @@ public:
     void setTexture (DemoTexture*);
     void freeAllContextObjects();
 
-    float scale = 1.0f, rotationSpeed = 0.0f;
+    float scale = 1.0f, rotationSpeed = 0.01f;
     juce::CriticalSection mutex;
     juce::Rectangle<int> bounds;
     BouncingNumber bouncingNumber;

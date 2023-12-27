@@ -273,7 +273,6 @@ struct TextureFromAsset final : public DemoTexture
 
 static juce::Array<ShaderPreset> getPresets()
 {
-    printf("getPreset called");
 #define SHADER_DEMO_HEADER                                \
     "/*  This is a live OpenGL Shader demo.\n"            \
     "    Edit the shader program below and it will be \n" \

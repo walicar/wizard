@@ -1,9 +1,5 @@
 #include "MainComponent.h"
 
-/**
- * TODO: Box is not spinning
- */
-
 MainComponent::MainComponent() : audioSettingsComponent(audioDeviceManager), forwardFFT(fftOrder)
 {
     if (auto *peer = getPeer())
@@ -82,9 +78,6 @@ void MainComponent::timerCallback()
     {
         processFFT();
         nextFFTBlockReady = false;
-        // repaint(); // TODO: ? should we replace this?
-        // TODO: add setShaderProgram
-        setShaderProgram(newVertexShader, newFragmentShader);
     }
 }
 
@@ -143,7 +136,7 @@ void MainComponent::newOpenGLContextCreated()
 }
 
 void MainComponent::renderOpenGL()
-{
+{ 
     using namespace ::juce::gl;
 
     const ScopedLock lock(mutex);
@@ -157,9 +150,6 @@ void MainComponent::renderOpenGL()
     if (textureToUse != nullptr)
         if (!textureToUse->applyTo(texture))
             textureToUse = nullptr;
-
-    // First draw our background graphics to demonstrate the OpenGLGraphicsContext
-    //     class, add this later?
 
     // if (doBackgroundDrawing)
     //     drawBackground2DStuff(desktopScale);
@@ -192,10 +182,7 @@ void MainComponent::renderOpenGL()
     shader->use();
 
     if (uniforms->projectionMatrix != nullptr)
-    {
         uniforms->projectionMatrix->setMatrix4(getProjectionMatrix().mat, 1, false);
-        printf("erm?");
-    }
 
     if (uniforms->viewMatrix != nullptr)
         uniforms->viewMatrix->setMatrix4(getViewMatrix().mat, 1, false);
@@ -318,12 +305,6 @@ void MainComponent::updateShader()
 
         triggerAsyncUpdate();
 
-        // in the example we use CodeDocument vertexShader to make sure we have a single truth
-
-        newVertexShader = {};
-        newFragmentShader = {};
-
-        // I don't think we have to update this if the program doesn't use a code document?
     }
 }
 
