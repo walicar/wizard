@@ -58,6 +58,7 @@ private:
 
     // Graphics
     float rotation = 0.0f;
+    float sensitivity = 1.0f;
     juce::OpenGLContext openGLContext;
 
     std::unique_ptr<juce::OpenGLShaderProgram> shader;

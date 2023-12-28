@@ -103,21 +103,13 @@ void MainComponent::pushNextSampleIntoFifo(float sample)
 
 void MainComponent::processFFT()
 {
+    juce::ScopedLock lock(mutex);
     forwardFFT.performFrequencyOnlyForwardTransform(fftData.data());
-    // create
+
     auto maxLevel = juce::FloatVectorOperations::findMinAndMax(fftData.data(), 256);
-
-    for (auto y = 1; y < 256; ++y)
-    {
-        auto skewedProportionY = 1.0f - std::exp(std::log((float)y / (float)256) * 0.2f);
-        auto fftDataIndex = (size_t)juce::jlimit(0, fftSize / 2, (int)(skewedProportionY * fftSize / 2));
-        auto level = juce::jmap(fftData[fftDataIndex], 0.0f, juce::jmax(maxLevel.getEnd(), 1e-5f), 0.0f, 1.0f);
-
-        // if (y >= 100 and y <= 110)
-        // {
-        //     printf("level[%d]> %f\n", y, level);
-        // }
-    }
+    float normalized_peak = juce::mapFromLog10(juce::jmax(maxLevel.getEnd(), 1e-5f), 1e-5f, 1e+2f);
+    
+    sensitivity = normalized_peak;
 }
 
 // Public Audio
@@ -219,7 +211,7 @@ Matrix3D<float> MainComponent::getProjectionMatrix() const
 {
     const ScopedLock lock(mutex);
 
-    auto w = 1.0f / (scale + 0.1f);
+    auto w = 0.35f;
     auto h = w * bounds.toFloat().getAspectRatio(false);
 
     return Matrix3D<float>::fromFrustum(-w, w, -h, h, 1.0f, 30.0f);
@@ -231,7 +223,7 @@ Matrix3D<float> MainComponent::getViewMatrix() const
 
     // if we had controls
     // auto viewMatrix = Matrix3D<float>::fromTranslation({0.0f, 1.0f, -10.0f}) * draggableOrientation.getRotationMatrix();
-    auto viewMatrix = Matrix3D<float>::fromTranslation({0.0f, 0.0f, -1.5f});
+    auto viewMatrix = Matrix3D<float>::fromTranslation({0.0f, 0.0f, -2.2f + sensitivity});
     auto rotationMatrix = Matrix3D<float>::rotation({rotation, rotation, -0.3f});
 
     return viewMatrix * rotationMatrix;
