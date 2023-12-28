@@ -42,14 +42,6 @@ MainComponent::~MainComponent()
 
 void MainComponent::paint(juce::Graphics &g)
 {
-    // uncomment me? after we done it?
-
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    // g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-
-    // g.setFont(juce::Font(16.0f));
-    // g.setColour(juce::Colours::white);
-    // g.drawText("Hello World!", getLocalBounds(), juce::Justification::centred, true);
 }
 
 void MainComponent::resized()
@@ -137,7 +129,7 @@ void MainComponent::renderOpenGL()
 
     auto desktopScale = (float)openGLContext.getRenderingScale();
 
-    OpenGLHelpers::clear(Colour(0xff4d4d4d));
+    OpenGLHelpers::clear(Colour(0xff000000));
 
     if (textureToUse != nullptr)
         if (!textureToUse->applyTo(texture))
