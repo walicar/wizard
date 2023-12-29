@@ -100,7 +100,7 @@ void MainComponent::processFFT()
 
     auto maxLevel = juce::FloatVectorOperations::findMinAndMax(fftData.data(), 256);
     float normalized_peak = juce::mapFromLog10(juce::jmax(maxLevel.getEnd(), 1e-5f), 1e-5f, 1e+2f);
-    
+
     sensitivity = normalized_peak;
 }
 
@@ -212,11 +212,20 @@ Matrix3D<float> MainComponent::getProjectionMatrix() const
 Matrix3D<float> MainComponent::getViewMatrix() const
 {
     const ScopedLock lock(mutex);
-
+    float PI = MathConstants<float>::twoPi;
+    auto axis = Vector3D<float>(0.5f, 0.5f, 0.0f);
     // if we had controls
     // auto viewMatrix = Matrix3D<float>::fromTranslation({0.0f, 1.0f, -10.0f}) * draggableOrientation.getRotationMatrix();
-    auto viewMatrix = Matrix3D<float>::fromTranslation({0.0f, 0.0f, -2.2f + sensitivity});
-    auto rotationMatrix = Matrix3D<float>::rotation({rotation, rotation, -0.3f});
+    
+    auto viewMatrix = Matrix3D<float>::fromTranslation({0.0f, 0.0f, -2.25f + sensitivity});
+    
+    // use Quarternions
+    float normalizedRotation = fmod(rotation, 2.0f * PI);
+    auto rotationQuarternion = Quaternion<float>(
+                                   axis * std::sin(normalizedRotation / 2.0f),
+                                   std::cos(normalizedRotation / 2.0f))
+                                   .normalised();
+    auto rotationMatrix = rotationQuarternion.getRotationMatrix();
 
     return viewMatrix * rotationMatrix;
 }
