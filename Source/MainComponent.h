@@ -4,7 +4,7 @@
 #include "AudioSettingsComponent.h"
 #include "OpenGLDS.h"
 
-class MainComponent : public juce::Component, public juce::AudioSource, private juce::Timer, private juce::OpenGLRenderer, private juce::AsyncUpdater
+class MainComponent : public juce::Component, public juce::KeyListener, public juce::AudioSource, private juce::Timer, private juce::OpenGLRenderer, private juce::AsyncUpdater
 {
 public:
     MainComponent();
@@ -20,6 +20,8 @@ public:
     void pushNextSampleIntoFifo(float);
 
     void processFFT();
+
+    bool keyPressed(const juce::KeyPress &, juce::Component *) override;
 
     // Need to be implemented
     void prepareToPlay(int, double) override;
@@ -48,6 +50,9 @@ public:
     };
 
 private:
+    // Settings
+    bool showSettings = false;
+
     // Audio
     juce::AudioDeviceManager audioDeviceManager;
     juce::AudioSourcePlayer audioSourcePlayer;

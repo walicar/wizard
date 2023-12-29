@@ -26,18 +26,17 @@ MainComponent::MainComponent() : audioSettingsComponent(audioDeviceManager), for
     startTimerHz(60);
 
     // setup display
-
-    // TODO: temporary removal
-    // addAndMakeVisible(audioSettingsComponent);
-
+    addChildComponent(audioSettingsComponent);
+    addKeyListener(this);
+    setWantsKeyboardFocus(true); // need this to listen to key events
     setSize(500, 500);
 }
 
 MainComponent::~MainComponent()
 {
-
     openGLContext.detach();
     shutDownAudio();
+    removeKeyListener(this);
 }
 
 void MainComponent::paint(juce::Graphics &g)
@@ -71,6 +70,24 @@ void MainComponent::timerCallback()
         processFFT();
         nextFFTBlockReady = false;
     }
+}
+
+bool MainComponent::keyPressed(const KeyPress &key, Component *source)
+{
+    if (key.getKeyCode() == KeyPress::escapeKey)
+    {
+        if (!showSettings)
+        {
+            audioSettingsComponent.setVisible(true);
+        }
+        else
+        {
+            audioSettingsComponent.setVisible(false);
+        }
+        showSettings = !showSettings;
+        return true;
+    }
+    return false;
 }
 
 // Public DSP
@@ -216,9 +233,9 @@ Matrix3D<float> MainComponent::getViewMatrix() const
     auto axis = Vector3D<float>(0.5f, 0.5f, 0.0f);
     // if we had controls
     // auto viewMatrix = Matrix3D<float>::fromTranslation({0.0f, 1.0f, -10.0f}) * draggableOrientation.getRotationMatrix();
-    
+
     auto viewMatrix = Matrix3D<float>::fromTranslation({0.0f, 0.0f, -2.25f + sensitivity});
-    
+
     // use Quarternions
     float normalizedRotation = fmod(rotation, 2.0f * PI);
     auto rotationQuarternion = Quaternion<float>(
