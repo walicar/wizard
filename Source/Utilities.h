@@ -3,7 +3,7 @@
 inline juce::String getAsset(const char *assetName)
 {
     // actually returning the data within the .obj file
-    auto assetsDir = juce::File::getSpecialLocation(juce::File::userHomeDirectory).getChildFile("Projects").getChildFile("juce_stuff");
+    auto assetsDir = juce::File::getSpecialLocation(juce::File::userHomeDirectory).getChildFile("wizard");
 
     auto resourceFile = assetsDir.getChildFile(assetName);
     jassert(resourceFile.existsAsFile());
@@ -17,7 +17,7 @@ inline juce::String getAsset(const char *assetName)
 
 inline juce::Image getImage(const char *assetName)
 {
-    auto assetsDir = juce::File::getSpecialLocation(juce::File::userHomeDirectory).getChildFile("Projects").getChildFile("juce_stuff");
+    auto assetsDir = juce::File::getSpecialLocation(juce::File::userHomeDirectory).getChildFile("wizard");
 
     auto resourceFile = assetsDir.getChildFile(assetName);
     jassert(resourceFile.existsAsFile());
