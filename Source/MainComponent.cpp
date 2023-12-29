@@ -230,7 +230,7 @@ Matrix3D<float> MainComponent::getViewMatrix() const
 {
     const ScopedLock lock(mutex);
     float PI = MathConstants<float>::twoPi;
-    auto axis = Vector3D<float>(0.5f, 0.5f, 0.0f);
+    auto axis = Vector3D<float>(0.5f, 0.5f, 0.5f);
     // if we had controls
     // auto viewMatrix = Matrix3D<float>::fromTranslation({0.0f, 1.0f, -10.0f}) * draggableOrientation.getRotationMatrix();
 
