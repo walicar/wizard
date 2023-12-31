@@ -2,11 +2,12 @@
 
 ![docs/wizard.png](docs/wizard.png)
 
-- audio visualizer using JUCE framework and OpenGL Bindings
+- Audio visualizer using JUCE framework and OpenGL Bindings
 
 ## Usage
 
-- clone repo
-- put `Assets/` in `~/wizard`
-- open `wizard.jucer`
-- build and compile (depending on your platform)
+- Clone repo
+- Put `Assets/` in `~/wizard`
+- Open `wizard.jucer`
+- Build and compile (depending on your platform)
+- Press `esc` to change input source
