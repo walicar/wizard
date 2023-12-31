@@ -21,7 +21,7 @@ MainComponent::MainComponent() : audioSettingsComponent(audioDeviceManager), for
                                       [this](bool granted)
                                       {
                                           int numInputChannels = granted ? 2 : 0;
-                                          setAudioChannels(numInputChannels, 2);
+                                          setAudioChannels(numInputChannels, 0);
                                       });
     startTimerHz(60);
 

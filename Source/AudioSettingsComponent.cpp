@@ -3,10 +3,10 @@
 AudioSettingsComponent::AudioSettingsComponent(juce::AudioDeviceManager &adm) : audioDeviceManager(adm)
 {
     audioDeviceSelector.reset(new juce::AudioDeviceSelectorComponent(audioDeviceManager,
-                                                                     0, 256, 0, 256, false, false, false, true));
+                                                                     0, 256, 0, 0, false, false, false, false));
     addAndMakeVisible(audioDeviceSelector.get());
     audioDeviceManager.addChangeListener(this);
-    setSize(500, 250);
+    setSize(500, 500);
 }
 
 AudioSettingsComponent::~AudioSettingsComponent()
