@@ -1,30 +1,15 @@
 #include <JuceHeader.h>
+#include <BinaryData.h>
 
 inline juce::String getAsset(const char *assetName)
 {
-    // actually returning the data within the .obj file
-    auto assetsDir = juce::File::getSpecialLocation(juce::File::userHomeDirectory).getChildFile("wizard");
-
-    auto resourceFile = assetsDir.getChildFile(assetName);
-    jassert(resourceFile.existsAsFile());
-
-    std::unique_ptr<juce::InputStream> input(resourceFile.createInputStream());
-    if (input == nullptr)
-        return {};
-
-    return input->readString();
+    juce::String input(BinaryData::crate_obj);
+    return input;
 }
 
 inline juce::Image getImage(const char *assetName)
 {
-    auto assetsDir = juce::File::getSpecialLocation(juce::File::userHomeDirectory).getChildFile("wizard");
-
-    auto resourceFile = assetsDir.getChildFile(assetName);
-    jassert(resourceFile.existsAsFile());
-
-    std::unique_ptr<juce::InputStream> input(resourceFile.createInputStream());
-    auto image = juce::ImageFileFormat::loadFrom(*input);
-    // could add it to imgcache, need hashcode though...
+    auto image = juce::ImageFileFormat::loadFrom(BinaryData::port_jpg, BinaryData::port_jpgSize);
     return image;
 }
 
